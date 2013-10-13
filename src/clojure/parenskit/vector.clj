@@ -26,6 +26,24 @@
   {:inline (fn [v] `(instance? SparseVector ~v))}
   [v] (instance? SparseVector v))
 
+(defn entries
+  "Reducible collection of vector `v` VectorEntries, optionally only for entries
+in `state`, which should be one of `#{:either :set :unset}` (default `:set`)."
+  ([^SparseVector v] (entries :set v))
+  ([state ^SparseVector v]
+     (let [state (->EntryState state)]
+       (reify
+         Seqable
+         (seq [_]
+           (if (identical? VectorEntry$State/SET state)
+             (seq v)
+             (seq (map #(.clone ^VectorEntry %) (.fast v state)))))
+
+         ccp/CollReduce
+         (coll-reduce [this f] (ccp/coll-reduce this f (f)))
+         (coll-reduce [_ f init]
+           (r/reduce f init (.fast v state)))))))
+
 (defn key
   "Key for vector entry `ve`."
   ^long [^VectorEntry ve] (.getKey ve))
@@ -52,7 +70,7 @@ in `state`, which should be one of `#{:either :set :unset}` (default `:set`)."
   ([state ^SparseVector v]
      (let [state (->EntryState state)]
        (reify
-         Seqable (seq [_] (map val v))
+         Seqable (seq [_] (map val (.fast v state)))
          ccp/CollReduce
          (coll-reduce [this f] (ccp/coll-reduce this f (f)))
          (coll-reduce [_ f init]
@@ -70,24 +88,11 @@ for entries in `state`, which should be one of `#{:either :set :unset}` (default
   ([state ^SparseVector v]
      (let [state (->EntryState state)]
        (reify
-         Seqable (seq [_] (map keyval v))
+         Seqable (seq [_] (map keyval (.fast v state)))
          ccp/CollReduce
          (coll-reduce [this f] (ccp/coll-reduce this f (f)))
          (coll-reduce [_ f init]
            (->> (.fast v state) (r/map keyval) (r/reduce f init)))))))
-
-(defn entries
-  "Reducible collection of vector `v` VectorEntries, optionally only for entries
-in `state`, which should be one of `#{:either :set :unset}` (default `:set`)."
-  ([^SparseVector v] (keyvals :set v))
-  ([state ^SparseVector v]
-     (let [state (->EntryState state)]
-       (reify
-         Seqable (seq [_] (map keyval v))
-         ccp/CollReduce
-         (coll-reduce [this f] (ccp/coll-reduce this f (f)))
-         (coll-reduce [_ f init]
-           (r/reduce f init (.fast v state)))))))
 
 (defn freeze!
   "Return immutable version of mutable vector `mv`, invalidating the original
@@ -128,7 +133,7 @@ key domain, or provided explicit key domain and optional value."
 
   ccp/IKVReduce
   (kv-reduce [v f init]
-    (reduce (fn [acc ve] (f acc (key ve) (val ve))) init v)))
+    (r/reduce (fn [acc ve] (f acc (key ve) (val ve))) init v)))
 
 (defprotocol MutableVectorConstruction
   (-mvec-domain [domain] [domain value])
@@ -171,7 +176,7 @@ key domain, or provided explicit key domain and optional value."
 
 (defmethod ivec :domain
   ([_ domain] (freeze! (mvec :domain domain)))
-  ([_ domain value] (freeze! (mvec :domain value))))
+  ([_ domain value] (freeze! (mvec :domain domain value))))
 
 (defmethod ivec :content
   ([content] (-ivec-content content))
