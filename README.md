@@ -1,6 +1,8 @@
 # parenskit
 
-A Clojure integration library for the LensKit framework.
+A Clojure integration library for the [LensKit][lenskit] framework.
+
+[lenskit]: http://lenskit.grouplens.org/
 
 ## Installation
 
