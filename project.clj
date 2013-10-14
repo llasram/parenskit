@@ -1,4 +1,4 @@
-(defproject org.platypope/parenskit "0.1.0"
+(defproject org.platypope/parenskit "0.1.1-SNAPSHOT"
   :description "Clojure integration library for the LensKit framework."
   :url "http://github.com/llasram/parenskit"
   :license {:name "Eclipse Public License"
