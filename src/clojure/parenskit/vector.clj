@@ -185,7 +185,8 @@ key domain, or provided explicit key domain and optional value."
 (extend-protocol ImmutableVectorConstruction
   Collection (-ivec-content [content] (ivec (mvec content)))
   Map (-ivec-content [content] (ImmutableSparseVector/create content))
-  SparseVector (-ivec-content [content] (.immutable content)))
+  SparseVector (-ivec-content [content] (.immutable content))
+  ImmutableSparseVector (-ivec-content [content] content))
 
 (defn ^:private write-vector
   "Write `read`able form of vector `v` to writer `w`."
@@ -230,24 +231,30 @@ with overlapping domain) from all values in `v`."
   "Modify mutable vector `v` to set all values in the key domain to `x`."
   [^MutableSparseVector v x] (returning v (.fill v (double x))))
 
-(defn map-ve!
+(defn map!
   "Modify mutable vector `v` to contain result of applying `f` to each vector
 entry for entries in `state` (`:set` by default).  Returns the modified vector."
-  ([f ^MutableSparseVector v] (map-ve! :set f v))
-  ([state f ^MutableSparseVector v]
+  ([f ^MutableSparseVector v] (map! f :set v))
+  ([f state ^MutableSparseVector v]
      (returning v
        (r/reduce (fn [_ ^VectorEntry ve]
                    (.set v ve (double (f ve))))
                  nil (entries state v)))))
 
-(defn map!
+(defn map-keys!
+  "Modify mutable vector `v` to contain result of applying `f` to each key for
+entries in `state` (`:set` by default).  Returns the modified vector."
+  ([f v] (map-keys! f :set  v))
+  ([f state v] (map! #(f (key %)) state v)))
+
+(defn map-vals!
   "Modify mutable vector `v` to contain result of applying `f` to each value for
 entries in `state` (`:set` by default).  Returns the modified vector."
-  ([f v] (map! :set f v))
-  ([state f v] (map-ve! state #(f (val %)) v)))
+  ([f v] (map-vals! f :set v))
+  ([f state v] (map! #(f (val %)) state v)))
 
 (defn map-kv!
   "Modify mutable vector `v` to contain result of applying `f` to each key and
 value for entries in `state` (`:set` by default).  Returns the modified vector."
-  ([f v] (map-kv! :set f v))
-  ([state f v] (map-ve! state #(f (key %) (val %)) v)))
+  ([f v] (map-kv! f :set v))
+  ([f state v] (map! #(f (key %) (val %)) state v)))

@@ -61,10 +61,10 @@
 (deftest test-mutation
   (is (= (lkv/mvec {0 1.0, 1 2.0, 2 3.0}))
       (->> (lkv/mvec :domain (range 3))
-           (lkv/map-kv! :either (fn [k _] (inc k)))))
+           (lkv/map-kv! (fn [k _] (inc k)) :either)))
   (is (= (lkv/mvec {0 1.0, 1 2.0, 2 3.0}))
       (->> (lkv/mvec (range 3))
-           (lkv/map! inc))))
+           (lkv/map-vals! inc))))
 
 (deftest test-arithmetic
   (is (= (lkv/mvec [0 3 5])
