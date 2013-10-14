@@ -8,8 +8,6 @@
   :java-source-paths ["src/java"]
   :javac-options ["-target" "1.6" "-source" "1.6"]
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.grouplens.lenskit/lenskit-data-structures "2.0.2"]
-                 [org.grouplens.lenskit/lenskit-api "2.0.2"]
                  [org.grouplens.lenskit/lenskit-core "2.0.2"]
                  [org.platypope/esfj "0.2.0"]]
   :profiles {:dev
