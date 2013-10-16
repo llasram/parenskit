@@ -19,9 +19,8 @@ the item scores for the user."
   {:tag `LenskitRecommender}
   [config] (LenskitRecommender/build config))
 
-(defmacro rec-get
-  "Get instance of injected implementation of class `cls` from configured
-recommender `rec`, with optional qualifier annotation `ann`."
+(defn ^:private rec-get*
+  "Type-hinted form for LenskitRecommender#get invocation."
   ([rec cls]
      (let [rec (vary-meta rec assoc :tag `LenskitRecommender)
            cls (vary-meta cls assoc :tag `Class)]
@@ -31,3 +30,10 @@ recommender `rec`, with optional qualifier annotation `ann`."
            ann (vary-meta ann assoc :tag `Class)
            cls (vary-meta cls assoc :tag `Class)]
        (vary-meta `(.get ~rec ~ann ~cls) assoc :tag cls))))
+
+(defn rec-get
+  "Get instance of injected implementation of class `cls` from configured
+recommender `rec`, with optional qualifier annotation `ann`."
+  {:inline (identity rec-get*), :inline-arities #{2 3}}
+  ([^LenskitRecommender rec ^Class cls] (.get rec cls))
+  ([^LenskitRecommender rec ^Class ann ^Class cls] (.get rec ann cls)))
