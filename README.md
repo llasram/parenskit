@@ -10,7 +10,7 @@ Parenskit is available on Clojars.  Add this `:dependency` to your
 Leiningen `project.clj`:
 
 ```clj
-[org.platypope/parenskit "0.1.0"]
+[org.platypope/parenskit "0.1.1"]
 ```
 
 ## Usage
