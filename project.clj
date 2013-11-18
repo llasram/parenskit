@@ -10,9 +10,8 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.grouplens.lenskit/lenskit-core "2.0.2"]
                  [org.platypope/esfj "0.2.0"]]
-  :profiles {:dev
-             {:dependencies
-              [[com.google.code.findbugs/annotations "2.0.2"]]}
-             :java6
-             {:dependencies
-              [[org.codehaus.jsr166-mirror/jsr166y "1.7.0"]]}})
+  :profiles {:default [:base :system :user :provided :java6 :dev]
+             :java6 {:dependencies
+                     [[org.codehaus.jsr166-mirror/jsr166y "1.7.0"]]}
+             :dev {:dependencies
+                   [[com.google.code.findbugs/annotations "2.0.2"]]}})
