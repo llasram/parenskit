@@ -1,13 +1,20 @@
 (ns parenskit.core
   (:import [org.grouplens.lenskit.core LenskitConfiguration]
            [org.grouplens.lenskit.core LenskitRecommender]
-           [parenskit ParenskitItemScorer]))
+           [parenskit ParenskitGlobalItemScorer ParenskitItemScorer]))
 
 (defn item-scorer
-  "Return LensKit ItemScore implemented by function `f`.  Function `f` should
+  "Return LensKit ItemScorer implemented by function `f`.  Function `f` should
 accept a user ID and a mutable vector, and should mutate the vector to contain
 the item scores for the user."
   [f] (ParenskitItemScorer. f))
+
+(defn global-item-scorer
+  "Return LensKit GlobalItemScore implemented by function `f`.  Function `f`
+should accept a collection of item IDs and a mutable output vector, and should
+mutate the vector to contain the scores for the items in the domain of the
+output vector."
+  [f] (ParenskitGlobalItemScorer. f))
 
 (defn config
   "Return new Lenskit configuration."
