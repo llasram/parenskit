@@ -12,8 +12,7 @@
                  [org.platypope/esfj "0.2.1"]]
   :profiles {:default [:base :system :user :provided :java6 :dev]
              :provided {:dependencies
-                        [[org.grouplens.lenskit/lenskit-eval "2.0.4"]]}
+                        [[com.google.code.findbugs/annotations "2.0.2"]
+                         [org.grouplens.lenskit/lenskit-eval "2.0.4"]]}
              :java6 {:dependencies
-                     [[org.codehaus.jsr166-mirror/jsr166y "1.7.0"]]}
-             :dev {:dependencies
-                   [[com.google.code.findbugs/annotations "2.0.2"]]}})
+                     [[org.codehaus.jsr166-mirror/jsr166y "1.7.0"]]}})
